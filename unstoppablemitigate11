@@ -1,0 +1,36 @@
+@nonreentrant("lock")
+@external
+def reduce_position(
+    _position_uid: bytes32, _reduce_by_amount: uint256, _min_amount_out: uint256
+) -> uint256:
+    """
+    @notice
+        Partially closes an existing position, by selling some of the 
+        underlying position_token.
+        Reduces both debt and margin in the position, leverage 
+        remains as is.
+    """
+    assert self.is_whitelisted_dex[msg.sender], "unauthorized"
+    assert not self._is_liquidatable(_position_uid), "in liquidation"
+
+    position: Position = self.positions[_position_uid]
+    assert position.position_amount >= _reduce_by_amount, "_reduce_by_amount > position"
+
+    min_amount_out: uint256 = _min_amount_out
+    if min_amount_out == 0:
+        # market order, add some slippage protection
+        min_amount_out = self._market_order_min_amount_out(
+            position.position_token, position.debt_token, position.position_amount
+        )
+    debt_amount: uint256 = self._debt(_position_uid)
+    margin_debt_ratio: uint256 = position.margin_amount * PRECISION / debt_amount
+
+    amount_out_received: uint256 = self._swap(
+        position.position_token, position.debt_token, _reduce_by_amount, min_amount_out
+    )
+
+    # Ensure amount_out_received is greater than or equal to _reduce_by_amount
+    assert amount_out_received >= _reduce_by_amount, "insufficient amount received"
+
+    # rest of the code...
+}
