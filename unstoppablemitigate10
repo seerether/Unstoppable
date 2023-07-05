@@ -1,0 +1,23 @@
+@internal
+def _swap(
+    _token_in: address,
+    _token_out: address,
+    _amount_in: uint256,
+    _min_amount_out: uint256,
+) -> uint256:
+    ERC20(_token_in).approve(self.swap_router, _amount_in)
+    token_out_balance_before: uint256 = ERC20(_token_out).balanceOf(self)
+
+    amount_out_received: uint256 = SwapRouter(self.swap_router).swap(
+        _token_in, _token_out, _amount_in, _min_amount_out
+    )
+
+    # Explicitly transfer the received tokens back to the contract
+    ERC20(_token_out).transferFrom(msg.sender, self, amount_out_received)
+
+    token_out_balance_after: uint256 = ERC20(_token_out).balanceOf(self)
+    assert (
+        token_out_balance_after >= token_out_balance_before + _min_amount_out
+    ), "min_amount_out"
+
+    return amount_out_received
