@@ -1,0 +1,19 @@
+@external
+def check_orders(_trade_uid: bytes32):
+    trade: Trade = self.open_trades[_trade_uid]
+
+    # Check market conditions
+    # Retrieve current market price or other relevant data
+    current_price: uint256 = ...  # Retrieve the current market price
+
+    # Check take profit orders
+    for i in range(len(trade.tp_orders)):
+        tp_order: TakeProfitOrder = trade.tp_orders[i]
+        if not tp_order.executed and current_price >= tp_order.trigger_price:
+            self.execute_tp_order(_trade_uid, i)
+
+    # Check stop loss orders
+    for i in range(len(trade.sl_orders)):
+        sl_order: StopLossOrder = trade.sl_orders[i]
+        if not sl_order.executed and current_price <= sl_order.trigger_price:
+            self.execute_sl_order(_trade_uid, i)
