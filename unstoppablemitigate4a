@@ -1,0 +1,15 @@
+@internal
+def _safe_transfer(_token: address, _to: address, _amount: uint256) -> bool:
+    res: Bytes[32] = raw_call(
+        _token,
+        concat(
+            method_id("transfer(address,uint256)"),
+            convert(_to, bytes32),
+            convert(_amount, bytes32),
+        ),
+        max_outsize=32,
+    )
+    if len(res) > 0:
+        assert convert(res, bool), "transfer failed"
+
+    return True
