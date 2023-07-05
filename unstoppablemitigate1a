@@ -1,0 +1,9 @@
+@external
+def execute_tp_order(_trade_uid: bytes32, _tp_order_index: uint8):
+    require(self.is_automated_mechanism(msg.sender), "Unauthorized")
+
+    ...
+
+@external
+def execute_sl_order(_trade_uid: bytes32, _sl_order_index: uint8):
+    require(self.is_automated_mechanism(msg.sender), "Unauthorized"
