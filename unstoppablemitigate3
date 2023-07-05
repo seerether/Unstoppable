@@ -1,0 +1,9 @@
+ uids: DynArray[bytes32, 1024] = self.trades_by_account[_trade.account]
+    for i in range(1024):
+        if uids[i] == _trade.uid:
+            uids[i] = uids[len(uids) - 1]
+            uids.pop()
+            break
+        if i == len(uids) - 1:
+            revert("Trade not found")
+    self.trades_by_account[_trade.account] = uids
