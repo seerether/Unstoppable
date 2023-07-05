@@ -1,0 +1,19 @@
+if account_balance < order.amount_in:
+    log LimitOrderFailed(_uid, order.account, "insufficient balance")
+    self._cancel_limit_order(_uid)
+    revert("insufficient balance")
+    return
+
+# ensure self has enough allowance to spend amount token_in
+account_allowance: uint256 = ERC20(order.token_in).allowance(order.account, self)
+if account_allowance < order.amount_in:
+    log LimitOrderFailed(_uid, order.account, "insufficient allowance")
+    self._cancel_limit_order(_uid)
+    revert("insufficient allowance")
+    return
+
+# cleanup storage
+self._cleanup_order(_uid)
+
+# transfer token_in from user to self
+self._safe_transfer_from(order.token_in, order.account, self, order.amount_in)
