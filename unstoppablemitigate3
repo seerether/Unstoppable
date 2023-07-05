@@ -1,9 +1,17 @@
  uids: DynArray[bytes32, 1024] = self.trades_by_account[_trade.account]
-    for i in range(1024):
+    trade_index: int128 = -1
+    for i in range(len(uids)):
         if uids[i] == _trade.uid:
-            uids[i] = uids[len(uids) - 1]
-            uids.pop()
+            trade_index = i
             break
-        if i == len(uids) - 1:
-            revert("Trade not found")
-    self.trades_by_account[_trade.account] = uids
+    
+    if trade_index != -1:
+        # Remove the trade UID from the array
+        uids[trade_index] = uids[len(uids) - 1]
+        uids.pop()
+        self.trades_by_account[_trade.account] = uids
+    else:
+        # Handle the case when the trade UID is not found
+        revert("Trade UID not found")
+log TradeClosed(_trade.account, _trade.uid, _trade, amount_out_received)
+    return amount_out_received
