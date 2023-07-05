@@ -1,0 +1,12 @@
+@external
+def cancel_dca_order(_uid: bytes32):
+    order: DcaOrder = self.dca_orders[_uid]
+    assert order.account == msg.sender, "unauthorized"
+
+    # Check if the token transfer was successful
+    if not self._safe_transfer(order.token_in, self, order.amount_in_per_execution):
+        # Transfer failed, revert the cancellation
+        revert("Token transfer failed")
+
+    # Proceed with canceling the DCA order
+    self._cancel_dca_order(_uid, "user canceled")
