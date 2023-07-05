@@ -1,0 +1,13 @@
+@external
+def post_limit_order(
+        _token_in: address,
+        _token_out: address,
+        _amount_in: uint256,
+        _min_amount_out: uint256,
+        _valid_until: uint256
+    ):
+
+    # Check that _amount_in is greater than 0
+    assert _amount_in > 0, "amount_in must be greater than 0"
+
+    # ... (rest of the function remains unchanged)
