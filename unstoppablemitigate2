@@ -1,0 +1,18 @@
+@nonreentrant("lock")
+@external
+def swap_margin(
+    _account: address,
+    _token_in: address,
+    _token_out: address,
+    _amount_in: uint256,
+    _min_amount_out: uint256,
+) -> uint256:
+    """
+    @notice
+        Allows a user to easily swap between his margin balances.
+    """
+    assert (_account == msg.sender) or self.is_delegate[_account][msg.sender], "unauthorized"
+
+    return Vault(self.vault).swap_margin(
+        _account, _token_in, _token_out, _amount_in, _min_amount_out
+    )
